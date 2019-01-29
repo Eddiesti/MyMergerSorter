@@ -7,11 +7,13 @@ public class MultiMergerThread extends Thread {
     private static final int MAX_THREADS = 4;
     private static AtomicInteger activeThreads = new AtomicInteger(0);
 
+
     public MultiMergerThread(int[] unsorted) {
         this.unsorted = unsorted;
     }
 
     public void run() {
+        activeThreads.incrementAndGet();
         int middle;
         int[] left, right;
         if (unsorted.length <= 1) {
@@ -22,7 +24,7 @@ public class MultiMergerThread extends Thread {
             right = new int[unsorted.length - middle];
             System.arraycopy(unsorted, 0, left, 0, middle);
             System.arraycopy(unsorted, middle, right, 0, unsorted.length - middle);
-            if (MAX_THREADS < activeThreads.get()) {
+            if (activeThreads.get() < MAX_THREADS) {
                 MultiMergerThread leftSort = new MultiMergerThread(left);
                 MultiMergerThread rightSort = new MultiMergerThread(right);
                 leftSort.start();
@@ -42,6 +44,7 @@ public class MultiMergerThread extends Thread {
                 sorted = Merger.merge(leftSort.getSorted(), rightSort.getSorted());
             }
         }
+        activeThreads.decrementAndGet();
     }
 
     public int[] getSorted() {
