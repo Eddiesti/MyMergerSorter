@@ -1,6 +1,6 @@
 package ru.otus;
 
-public class Merger<T> implements Sorter {
+public class Merger implements Sorter {
     private int[] unsorted, sorted;
 
     public Merger(int[] unsorted) {
